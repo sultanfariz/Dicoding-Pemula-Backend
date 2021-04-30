@@ -5,8 +5,11 @@ const getAllBooksHandler = (request, h) => {
     let { name, reading, finished } = request.query;
     let book = books;
     let bookArray = new Array();
-
-    if(name !== undefined) book = book.filter((n) => n.name === name);
+    let rgx = new RegExp(`${name}`, 'i');
+    
+    if(name !== undefined){
+        book = book.filter((n) => rgx.test(n.name));
+    } 
     if(reading !== undefined){
         reading = (reading === "1" ? true : false);
         book = book.filter((n) => n.reading === reading);
@@ -25,7 +28,7 @@ const getAllBooksHandler = (request, h) => {
     return {
         status: 'success',
         data: {
-            bookArray,
+            books: bookArray,
         },
     }
 };
@@ -110,7 +113,7 @@ const editBookByIdHandler = (request, h) => {
     if(!name) {
         const response = h.response({
             status: 'fail',
-            message: 'Gagal menambahkan buku. Mohon isi nama buku',
+            message: 'Gagal memperbarui buku. Mohon isi nama buku',
         });
         response.code(400);
         return response;
@@ -119,7 +122,7 @@ const editBookByIdHandler = (request, h) => {
     if(readPage > pageCount) {
         const response = h.response({
             status: 'fail',
-            message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+            message: 'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
         });
         response.code(400);
         return response;
@@ -146,14 +149,14 @@ const editBookByIdHandler = (request, h) => {
         };
         const response = h.response({
             status: 'success',
-            message: 'Catatan berhasil diperbarui',
+            message: 'Buku berhasil diperbarui',
         });
         response.code(200);
         return response;
     }
     const response = h.response({
         status: 'fail',
-        message: 'Gagal memperbarui catatan. Id tidak ditemukan',
+        message: 'Gagal memperbarui buku. Id tidak ditemukan',
     });
     response.code(404);
     return response;
